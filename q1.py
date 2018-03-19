@@ -14,7 +14,8 @@ of the hidden units. Include the snippets of the Python code. [3 pt.]
 
 #initialize weight matrix and bias
 #then return weight sum of inputs ( wx + b)??
-def foo(x numHidden):
+def foo(x, numHidden):
+    print('a')
     #bias = 0
     #weight matrix = xavier initialized
     #https://www.tensorflow.org/api_docs/python/tf/get_variable
