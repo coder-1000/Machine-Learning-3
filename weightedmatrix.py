@@ -28,35 +28,35 @@ def weighted_matrix(inputs, numHiddenUnits):
 
 if __name__ == "__main__":
 
-	with np.load("notMNIST.npz") as data:
-		Data, Target = data ["images"], data["labels"]
-		np.random.seed(521)
-		randIndx = np.arange(len(Data))
-		np.random.shuffle(randIndx)
-		Data = Data[randIndx]/255.
-		Target = Target[randIndx]
-		trainData, trainTarget = Data[:15000], Target[:15000]
-		validData, validTarget = Data[15000:16000], Target[15000:16000]
-		testData, testTarget = Data[16000:], Target[16000:]
+    with np.load("notMNIST.npz") as data:
+        Data, Target = data ["images"], data["labels"]
+        np.random.seed(521)
+        randIndx = np.arange(len(Data))
+        np.random.shuffle(randIndx)
+        Data = Data[randIndx]/255.
+        Target = Target[randIndx]
+        trainData, trainTarget = Data[:15000], Target[:15000]
+        validData, validTarget = Data[15000:16000], Target[15000:16000]
+        testData, testTarget = Data[16000:], Target[16000:]
 
 
 
-	with tf.Session() as sess:
-		start = 0;
-		BATCH_SIZE = 500;
-		TRAINING_NUM_POINTS = 15000;
-		trainNumBatches = TRAINING_NUM_POINTS/BATCH_SIZE;	
-		NUM_ITERATIONS = 5000;
+    with tf.Session() as sess:
+        start = 0;
+        BATCH_SIZE = 500;
+        TRAINING_NUM_POINTS = 15000;
+        trainNumBatches = TRAINING_NUM_POINTS/BATCH_SIZE;	
+        NUM_ITERATIONS = 5000;
 
-		trainX = np.reshape(trainData, (TRAINING_NUM_POINTS, -1) );
-		trainY = trainTarget.astype(np.float64);
+        trainX = np.reshape(trainData, (TRAINING_NUM_POINTS, -1) );
+        trainY = trainTarget.astype(np.float64);
 
 
-		#descend the gradient 
-		for i in range(NUM_ITERATIONS):
-		
-			start = (start+ batchSize) % NUM_POINTS;
-			end = start + batchSize;
+        #descend the gradient 
+        for i in range(NUM_ITERATIONS):
+        
+            start = (start+ batchSize) % NUM_POINTS;
+            end = start + batchSize;
 
-			res = sess.run(weighted_sum(inputs, numHiddenUnits), feed_dict={inputs: trainX[start : end] , numHiddenUnits:1000}); 
-			print(res.shape)
+            res = sess.run(weighted_sum(inputs, numHiddenUnits), feed_dict={inputs: trainX[start : end] , numHiddenUnits:1000}); 
+            print(res.shape)
