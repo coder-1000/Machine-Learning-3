@@ -16,13 +16,20 @@ import numpy as np
 
 #we only have one layer in this case
 def weighted_matrix(inputs, numHiddenUnits):
-    W = tf.get_variable("weight", shape=[784, numHiddenUnits],initializer=tf.contrib.layers.xavier_initializer());
-    #b = tf.Variable(0.0, name='bias') #where do we add the bias?
-    x = tf.placeholder("inputs", tf.float32); #inputs 
-    
-    weighted_sum = tf.matmul(x,W) #matrix multiplication 
-    
-    return weighted_sum
+    with tf.variable_scope("weighted_matrix", reuse=tf.AUTO_REUSE):
+        w = tf.get_variable(
+            name = "weight", 
+            shape = [784, numHiddenUnits],
+            initializer = tf.contrib.layers.xavier_initializer(),
+            dtype = tf.float64
+            
+            );
+        #b = tf.Variable(0.0, name='bias') #where do we add the bias?
+        x = tf.placeholder(dtype = tf.float64, name = 'inputs'); #inputs 
+        
+        weighted_sum = tf.matmul(x,w) 
+        #res = tf.Session().run(weighted_sum, feed_dict = {x: inputs})
+        #return res
 
 
 
@@ -41,22 +48,20 @@ if __name__ == "__main__":
 
 
 
-    with tf.Session() as sess:
-        start = 0;
-        BATCH_SIZE = 500;
-        TRAINING_NUM_POINTS = 15000;
-        trainNumBatches = TRAINING_NUM_POINTS/BATCH_SIZE;	
-        NUM_ITERATIONS = 5000;
+    start = 0;
+    BATCH_SIZE = 500;
+    TRAINING_NUM_POINTS = 15000;
+    trainNumBatches = TRAINING_NUM_POINTS/BATCH_SIZE;	
+    NUM_ITERATIONS = 5000;
 
-        trainX = np.reshape(trainData, (TRAINING_NUM_POINTS, -1) );
-        trainY = trainTarget.astype(np.float64);
+    trainX = np.reshape(trainData, (TRAINING_NUM_POINTS, -1) );
+    trainY = trainTarget.astype(np.float64);
 
 
-        #descend the gradient 
-        for i in range(NUM_ITERATIONS):
+    #descend the gradient 
+    for i in range(NUM_ITERATIONS):
+    
+        start = (start+ BATCH_SIZE) % TRAINING_NUM_POINTS;
+        end = start + BATCH_SIZE;
         
-            start = (start+ batchSize) % NUM_POINTS;
-            end = start + batchSize;
-
-            res = sess.run(weighted_sum(inputs, numHiddenUnits), feed_dict={inputs: trainX[start : end] , numHiddenUnits:1000}); 
-            print(res.shape)
+        weighted_matrix(trainX[start:end], 1000)        
