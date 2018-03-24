@@ -13,24 +13,36 @@
 import tensorflow as tf
 import numpy as np
 
+NUM_PIXELS = 784;
 
 #we only have one layer in this case
+#input shape : [batchsize, pixels]
+#initialize a layer in a cnn
 def weighted_matrix(inputs, numHiddenUnits):
-    with tf.variable_scope("weighted_matrix", reuse=tf.AUTO_REUSE):
-        w = tf.get_variable(
-            name = "weight", 
-            shape = [784, numHiddenUnits],
-            initializer = tf.contrib.layers.xavier_initializer(),
+    
+    #reset graph to get a new 'w' everytime i get variable
+    tf.reset_default_graph()
+    #gives a xavier distribution for our initial weights
+    w = tf.get_variable(
+        name = 'w', 
+        shape = (inputs.shape[1], numHiddenUnits), 
+        initializer = tf.contrib.layers.xavier_initializer(),
+        dtype =tf.float64
+    ) 
+    b = tf.Variable(
+            initial_value = 0.0, 
+            name = 'bias', 
             dtype = tf.float64
-            
-            );
-        #b = tf.Variable(0.0, name='bias') #where do we add the bias?
-        x = tf.placeholder(dtype = tf.float64, name = 'inputs'); #inputs 
+    ) 
+    x = tf.placeholder(dtype = tf.float64, name = 'inputs'); #inputs 
         
-        weighted_sum = tf.matmul(x,w) 
-        #res = tf.Session().run(weighted_sum, feed_dict = {x: inputs})
-        #return res
-
+    weighted_sum = tf.matmul(x,w) + b
+   
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        #sess.run(w)
+        res = sess.run(weighted_sum, feed_dict = {x: inputs})
+        return res
 
 
 if __name__ == "__main__":
@@ -64,4 +76,4 @@ if __name__ == "__main__":
         start = (start+ BATCH_SIZE) % TRAINING_NUM_POINTS;
         end = start + BATCH_SIZE;
         
-        weighted_matrix(trainX[start:end], 1000)        
+        res = weighted_matrix(trainX[start:end], 1000)      
