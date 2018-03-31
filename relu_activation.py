@@ -1,4 +1,3 @@
-import weighted_matrix
 import numpy as np
 import tensorflow as tf
 
@@ -25,4 +24,4 @@ if __name__ == "__main__":
 	 trainStep = tf.train.GradientOptimizer(lR).minimize(loss);
 
 	 #misclassfications, add to the misclassifications list if they are not equal, therfore misclassified
-	 missclassifications.append(not tf.equal(tf.argmax(outputLayer,axis = 1), tf.argmax(actualLabel, axis = 1)))
+	 missclassifications.append(not tf.equal(tf.transpose(outputLayer), actualLabel))
