@@ -14,35 +14,33 @@ import tensorflow as tf
 import numpy as np
 
 NUM_PIXELS = 784;
+batch_num = 0;
 
 #we only have one layer in this case
 #input shape : [batchsize, pixels]
 #initialize a layer in a cnn
 def weighted_matrix(inputs, numHiddenUnits):
-    
-    #reset graph to get a new 'w' everytime i get variable
-    tf.reset_default_graph()
+    global batch_num    
     #gives a xavier distribution for our initial weights
     w = tf.get_variable(
-        name = 'w', 
+        name = 'w{0}'.format(batch_num), 
         shape = (inputs.shape[1], numHiddenUnits), 
         initializer = tf.contrib.layers.xavier_initializer(),
         dtype =tf.float64
     ) 
-    b = tf.Variable(
-            initial_value = 0.0, 
-            name = 'bias', 
-            dtype = tf.float64
-    ) 
+    b = tf.get_variable(
+            initializer = tf.zeros_initializer(), 
+            name = 'b{0}'.format(batch_num), 
+            dtype = tf.float64,
+	    shape = (1000)   
+	)
+ 
+    batch_num = batch_num + 1;
     x = tf.placeholder(dtype = tf.float64, name = 'inputs'); #inputs 
         
     weighted_sum = tf.matmul(x,w) + b
    
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        #sess.run(w)
-        res = sess.run(weighted_sum, feed_dict = {x: inputs})
-        return res
+    return [w, b, weighted_sum]
 
 
 if __name__ == "__main__":
