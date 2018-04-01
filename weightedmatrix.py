@@ -24,7 +24,7 @@ def weighted_matrix(inputs, numHiddenUnits):
     #gives a xavier distribution for our initial weights
     w = tf.get_variable(
         name = 'w{0}'.format(batch_num), 
-        shape = (inputs.shape[1], numHiddenUnits), 
+        shape = [inputs.shape[1], numHiddenUnits], 
         initializer = tf.contrib.layers.xavier_initializer(),
         dtype =tf.float64
     ) 
@@ -32,13 +32,12 @@ def weighted_matrix(inputs, numHiddenUnits):
             initializer = tf.zeros_initializer(), 
             name = 'b{0}'.format(batch_num), 
             dtype = tf.float64,
-	    shape = (1000)   
+	    shape = (numHiddenUnits)   
 	)
  
     batch_num = batch_num + 1;
-    x = tf.placeholder(dtype = tf.float64, name = 'inputs'); #inputs 
         
-    weighted_sum = tf.matmul(x,w) + b
+    weighted_sum = tf.matmul(inputs, w) + b
    
     return [w, b, weighted_sum]
 
