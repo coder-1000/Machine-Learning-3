@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 NUM_HIDDEN_UNITS = 1000;
 NUM_UNITS_OUTPUT_LAYER = 10;
 BATCH_SIZE = 500;
-NUM_ITERATIONS = 505050505000;
+NUM_ITERATIONS = 5000;
 NUM_PIXELS = 784
 LAMDA = 0.0003
 LEARNING_RATES = [0.005, 0.001, 0.0001]
@@ -104,7 +104,7 @@ if __name__ == "__main__":
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
                 if( ((i+1)% num_batches) == 0):
-                    print(i)
+                    #print(i)
 
                     #get cross entropy loss values
                     trainCross = sess.run(loss, feed_dict={x0:  trainX, y: trainY })
