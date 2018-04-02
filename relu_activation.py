@@ -104,7 +104,7 @@ if __name__ == "__main__":
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
                 if( ((i+1)% num_batches) == 0):
-                    #print(i)
+                    print(i)
 
                     #get cross entropy loss values
                     trainCross = sess.run(loss, feed_dict={x0:  trainX, y: trainY })
@@ -135,11 +135,13 @@ if __name__ == "__main__":
                 #increment batch
                 start = end % numTrainingPoints
             
-        #get list of numbers from 0 to num iterations
-        xVals = np.arange(len(crossTrainVals));
+
         
         for lr in range(len(LEARNING_RATES)):
-
+            
+            #get list of numbers from 0 to num iterations
+            xVals = np.arange(len(crossTrainVals[lr]));
+            
             print("learning rate  = " + str(LEARNING_RATES[lr]))
 
             print("minimum cross Train was " + str(minCrossTrain[lr]))
