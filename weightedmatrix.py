@@ -32,7 +32,7 @@ def weighted_matrix(inputs, numHiddenUnits):
             initializer = tf.zeros_initializer(), 
             name = 'b{0}'.format(batch_num), 
             dtype = tf.float64,
-	    shape = (numHiddenUnits)   
+	    shape = (1,numHiddenUnits)   
 	)
  
     batch_num = batch_num + 1;
