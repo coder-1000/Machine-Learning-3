@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 NUM_HIDDEN_UNITS = 1000;
 NUM_UNITS_OUTPUT_LAYER = 10;
 BATCH_SIZE = 500;
-NUM_ITERATIONS = 5000;
+NUM_ITERATIONS = 200;
 NUM_PIXELS = 784
 LAMDA = 0.0003
 LEARNING_RATES = [0.005, 0.001, 0.0001]
@@ -81,6 +81,8 @@ if __name__ == "__main__":
     minClassTrain = [9999, 9999, 9999]
     minClassValid = [9999, 9999, 9999]
     minClassTest = [9999, 9999, 9999]
+    
+    earlyStoppingIteration = [0, 0, 0];
 
     with tf.Session() as sess:
         
@@ -125,6 +127,10 @@ if __name__ == "__main__":
                     testClass = sess.run(misclassification, feed_dict ={x0: testX, y:  testY})
 
                     minClassTrain[lr] = min(minClassTrain[lr], trainClass)
+                    
+                    if(minClassValid[lr] > validClass):
+                        earlyStoppingIteration[lr] = i;
+                        minClassValid[lr] = validClass; 
                     minClassValid[lr] = min(minClassValid[lr], validClass)
                     minClassTest[lr] = min(minClassTest[lr], testClass)
 
@@ -142,6 +148,8 @@ if __name__ == "__main__":
             #get list of numbers from 0 to num iterations
             xVals = np.arange(len(crossTrainVals[lr]));
             
+            print("early stopping = " + str(earlyStoppingIteration[lr]));
+
             print("learning rate  = " + str(LEARNING_RATES[lr]))
 
             print("minimum cross Train was " + str(minCrossTrain[lr]))
