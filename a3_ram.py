@@ -159,7 +159,7 @@ if __name__ == "__main__":
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
                 if( ((i+1)% num_batches) == 0):
-                    #print(i)
+                    print(i)
 
                         #get cross entropy loss values
                     trainCross = sess.run(loss, feed_dict={x0:  trainX, y: trainY })
