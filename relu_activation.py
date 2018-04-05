@@ -36,31 +36,7 @@ if __name__ == "__main__":
     testX = np.reshape(testData, (testData.shape[0], -1) );
     testY = testTarget.astype(np.float64); 
     
-    #input layer
-    x0 = tf.placeholder(tf.float64, name="input_layer", shape = [None, NUM_PIXELS]);
-    #target values for input
-    y = tf.placeholder(tf.int64, name="target");
-    
-    #one hot enncoding for softmax
-    faty = tf.one_hot(indices = y, depth = 10);
-    
-    #hidden layer1
-    [w1, b1, s1] = wm.weighted_matrix(x0, NUM_HIDDEN_UNITS);
-    x1 = tf.nn.relu(s1);
-    
-    #output layer
-    [w2, b2, s2] = wm.weighted_matrix(x1, NUM_UNITS_OUTPUT_LAYER);
-    
-    #error
-    cross = tf.nn.softmax_cross_entropy_with_logits(logits = s2, labels = faty);
-    weightDecay = (tf.reduce_sum(w1**2) + tf.reduce_sum(w2**2) )*(LAMDA)
-    
-    loss = tf.reduce_mean((cross + weightDecay)/2.0)
 
-    misclassification = tf.reduce_mean( tf.cast(tf.not_equal(tf.argmax(s2,axis=1), y), tf.float64) )
-    #misclassification = tf.argmax(s2,axis=1);
-
-    
    
     #store cross entropy error
     crossTrainVals = [[],[],[]]
@@ -82,16 +58,41 @@ if __name__ == "__main__":
     minClassValid = [9999, 9999, 9999]
     minClassTest = [9999, 9999, 9999]
     
-    earlyStoppingIteration = [0, 0, 0];
-
-    with tf.Session() as sess:
-        
-        start = 0;
+    earlyStoppingIteration = [0, 0, 0];     
        
-        num_batches = trainX.shape[0] // BATCH_SIZE
+    num_batches = trainX.shape[0] // BATCH_SIZE
+    
+    for lr in range( len(LEARNING_RATES) ):
+        tf.reset_default_graph()
+                
+        tf.set_random_seed(1002473496)
+        #input layer
+        x0 = tf.placeholder(tf.float64, name="input_layer", shape = [None, NUM_PIXELS]);
+        #target values for input
+        y = tf.placeholder(tf.int64, name="target");
         
-        for lr in range( len(LEARNING_RATES) ):
-            
+        #one hot enncoding for softmax
+        faty = tf.one_hot(indices = y, depth = 10);
+        
+        #hidden layer1
+        [w1, b1, s1] = wm.weighted_matrix(x0, NUM_HIDDEN_UNITS);
+        x1 = tf.nn.relu(s1);
+        
+        #output layer
+        [w2, b2, s2] = wm.weighted_matrix(x1, NUM_UNITS_OUTPUT_LAYER);
+        
+        #error
+        cross = tf.nn.softmax_cross_entropy_with_logits(logits = s2, labels = faty);
+        weightDecay = (tf.reduce_sum(w1**2) + tf.reduce_sum(w2**2) )*(LAMDA)
+        
+        loss = tf.reduce_mean((cross + weightDecay)/2.0)
+
+        misclassification = tf.reduce_mean( tf.cast(tf.not_equal(tf.argmax(s2,axis=1), y), tf.float64) )
+        
+        with tf.Session() as sess:          
+            start = 0;
+
+
             learningRate = LEARNING_RATES[lr]
             descendGradient = tf.train.AdamOptimizer(learningRate).minimize(loss);
             
@@ -103,8 +104,15 @@ if __name__ == "__main__":
             for i in range(NUM_ITERATIONS): 
             
                 end = start + BATCH_SIZE;
+                if(i == 0):
+                    test = sess.run(w2,feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
+                    print("test")
+                    print(test[0])
+                
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
+              
+
                 if( ((i+1)% num_batches) == 0):
                     print(i)
 
@@ -140,49 +148,49 @@ if __name__ == "__main__":
                 
                 #increment batch
                 start = end % numTrainingPoints
-            
+            sess.close()    
 
         
-        for lr in range(len(LEARNING_RATES)):
-            
-            #get list of numbers from 0 to num iterations
-            xVals = np.arange(len(crossTrainVals[lr]));
-            
-            print("early stopping = " + str(earlyStoppingIteration[lr]));
-
-            print("learning rate  = " + str(LEARNING_RATES[lr]))
-
-            print("minimum cross Train was " + str(minCrossTrain[lr]))
-            print("minimum cross Valid  was " + str(minCrossValid[lr]))
-            print("minimum cross Test was " + str(minCrossTest[lr]))
-
-            print("minimum class Train was " + str(minClassTrain[lr]))
-            print("minimum class Valid was " + str(minClassTrain[lr]))
-            print("minimum class Test was " + str(minClassTrain[lr]))
-
-            plt.plot(xVals, crossTrainVals[lr], label= "training pts" )        
-            plt.plot(xVals, crossValidVals[lr], label= "validation pts" )
-            plt.plot(xVals, crossTestVals[lr], label="test points")
-
-            plt.xlabel('Epoch #');
-            plt.ylabel('Loss');
-            plt.legend();
-            plt.title("Cross Entropy Loss vs Num Epochs with LR = " + str(LEARNING_RATES[lr]) )
-
-            plt.show() 
+    for lr in range(len(LEARNING_RATES)):
         
-            plt.figure()
+        #get list of numbers from 0 to num iterations
+        xVals = np.arange(len(crossTrainVals[lr]));
+        
+        print("early stopping = " + str(earlyStoppingIteration[lr]));
 
-            plt.plot(xVals, classTrainVals[lr], label="training pts" )
-            plt.plot(xVals, classValidVals[lr], label="validation pts" )
-            plt.plot(xVals, classTestVals[lr], label="test points")
+        print("learning rate  = " + str(LEARNING_RATES[lr]))
 
-            plt.xlabel('Epoch #');
-            plt.ylabel('Classification Error');
-            plt.legend();
-            plt.title("Classification Error vs Num Epochs with LR = " + str(LEARNING_RATES[lr]))
-            
-            plt.show()
+        print("minimum cross Train was " + str(minCrossTrain[lr]))
+        print("minimum cross Valid  was " + str(minCrossValid[lr]))
+        print("minimum cross Test was " + str(minCrossTest[lr]))
+
+        print("minimum class Train was " + str(minClassTrain[lr]))
+        print("minimum class Valid was " + str(minClassTrain[lr]))
+        print("minimum class Test was " + str(minClassTrain[lr]))
+
+        plt.plot(xVals, crossTrainVals[lr], label= "training pts" )        
+        plt.plot(xVals, crossValidVals[lr], label= "validation pts" )
+        plt.plot(xVals, crossTestVals[lr], label="test points")
+
+        plt.xlabel('Epoch #');
+        plt.ylabel('Loss');
+        plt.legend();
+        plt.title("Cross Entropy Loss vs Num Epochs with LR = " + str(LEARNING_RATES[lr]) )
+
+        plt.show() 
+    
+        plt.figure()
+
+        plt.plot(xVals, classTrainVals[lr], label="training pts" )
+        plt.plot(xVals, classValidVals[lr], label="validation pts" )
+        plt.plot(xVals, classTestVals[lr], label="test points")
+
+        plt.xlabel('Epoch #');
+        plt.ylabel('Classification Error');
+        plt.legend();
+        plt.title("Classification Error vs Num Epochs with LR = " + str(LEARNING_RATES[lr]))
+        
+        plt.show()
     
    
 
