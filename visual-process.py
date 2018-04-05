@@ -150,8 +150,9 @@ if __name__ == "__main__":
 				w1matrix[j] = tf.pad(w1matrix[j], [[2,2],[2,2]], mode = "CONSTANT", constant_values = tf.cast(minimum,tf.float64))
 
 			print("Shape of matrix")
-			w1matrix = tf.convert_to_tensor(w1matrix)
+			#w1matrix = tf.convert_to_tensor(w1matrix)
 			#print(w1matrix.shape)
+			w1matrix = np.array(sess.run(w1matrix))
 			w1matrix = tf.concat (w1matrix,axis = 1) #now a single row of 28x(28*100) #now 32x(32x100)
 			#print(w1matrix.shape)
 			w1matrix = tf.split(w1matrix,10,axis = 1)#split this into 10 rows
