@@ -195,7 +195,7 @@ if __name__ == "__main__":
             
             print("early stopping = " + str(earlyStoppingIteration[lr]));
 
-            print("learning rate  = " + str(LEARNING_RATES[lr]))
+            print("learning rate  = " + str(learningRate))
 
             print("minimum cross Train was " + str(minCrossTrain[lr]))
             print("minimum cross Valid  was " + str(minCrossValid[lr]))
@@ -212,7 +212,7 @@ if __name__ == "__main__":
             plt.xlabel('Epoch #');
             plt.ylabel('Loss');
             plt.legend();
-            plt.title("Cross Entropy Loss vs Num Epochs with LR = " + str(LEARNING_RATES[lr]) )
+            plt.title("Cross Entropy Loss vs Num Epochs with LR = " + str(learningRate) )
 
             plt.show() 
         
@@ -225,7 +225,7 @@ if __name__ == "__main__":
             plt.xlabel('Epoch #');
             plt.ylabel('Classification Error');
             plt.legend();
-            plt.title("Classification Error vs Num Epochs with LR = " + str(LEARNING_RATES[lr]))
+            plt.title("Classification Error vs Num Epochs with LR = " + str(learningRate))
             
             plt.show()
     
