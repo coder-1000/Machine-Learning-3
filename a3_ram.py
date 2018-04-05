@@ -15,6 +15,7 @@ NUM_PIXELS = 784
 
 if __name__ == "__main__":
 
+    matplotlib.use('Agg')
     with np.load("notMNIST.npz") as data:
         Data, Target = data ["images"], data["labels"]
         np.random.seed(521)
