@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import weightedmatrix as wm
+import matplotlib
 import matplotlib.pyplot as plt
 import time
 from math import exp
