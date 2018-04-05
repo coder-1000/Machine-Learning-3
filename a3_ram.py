@@ -3,14 +3,15 @@ import tensorflow as tf
 import weightedmatrix as wm
 import matplotlib.pyplot as plt
 import time
+from math import exp
 
-NUM_HIDDEN_UNITS = 1000;
+#NUM_HIDDEN_UNITS = 1000;
 NUM_UNITS_OUTPUT_LAYER = 10;
 BATCH_SIZE = 500;
 NUM_ITERATIONS = 200;
 NUM_PIXELS = 784
-LAMDA = 0.0003
-LEARNING_RATES = [0.005, 0.001, 0.0001]
+#LAMDA = 0.0003
+#LEARNING_RATES = [0.005, 0.001, 0.0001]
 
 if __name__ == "__main__":
 
@@ -25,11 +26,29 @@ if __name__ == "__main__":
         validData, validTarget = Data[15000:16000], Target[15000:16000]
         testData, testTarget = Data[16000:], Target[16000:] 
    
-    np.ramdom.seed((time.time()).astype(int32))
-    ramLR = np.arrange(-7.5,-4.5,0.1)
-    np.random.shuffle(ramLR)
-    lr = exp(ramLR)
-    ram
+    np.random.seed(int(time.time()))
+    learningRate = np.arange(-7.5,-4.5,0.1)
+    numLayer = np.arange(1,5,1)
+    numHiddenUnits = np.arange(100,500,10).astype(np.int32)
+    lamda = np.arange(-9,-6,0.1)
+
+    np.random.shuffle(learningRate)
+    np.random.shuffle(numLayer)
+    np.random.shuffle(numHiddenUnits)
+    np.random.shuffle(lamda)
+
+    learningRate = exp(learningRate[0])
+    numLayer = numLayer[0]
+    numHiddenUnits = numHiddenUnits[0]
+    lamda = exp(lamda[0])
+    dropFlag = int(time.time())%2
+
+    print(learningRate)
+    print(numLayer)
+    print(numHiddenUnits)
+    print(lamda)
+    print(dropFlag)
+
     #format data
     numTrainingPoints = trainData.shape[0]
 
@@ -46,20 +65,41 @@ if __name__ == "__main__":
     x0 = tf.placeholder(tf.float64, name="input_layer", shape = [None, NUM_PIXELS]);
     #target values for input
     y = tf.placeholder(tf.int64, name="target");
-    
     #one hot enncoding for softmax
     faty = tf.one_hot(indices = y, depth = 10);
     
-    #hidden layer1
-    [w1, b1, s1] = wm.weighted_matrix(x0, NUM_HIDDEN_UNITS);
-    x1 = tf.nn.relu(s1);
+    # w - weight
+    # b - bias
+    # s - sensitivity/weighted
+    x1 = []
+    wd = []
+    for i in range(numLayer):
+
+        # hidden layer
+        [wh, bh, sh] = wm.weighted_matrix(x0, numHiddenUnits)
+        xh = tf.nn.relu(sh)
+        if(dropFlag == 1):
+            xh = tf.nn.dropout(xh, 0.5)
+
+        # calculate the weight decay
+        if(i == 0):
+            wd = tf.reduce_sum(wh**2)
+        else:
+            wd = wd + tf.reduce_sum(wh**2)
+
+        # x1 = output of all hidden layers
+        if(i == (numLayer-1)):
+            x1 = xh
+
     
-    #output layer
+
+
+    # output layer
     [w2, b2, s2] = wm.weighted_matrix(x1, NUM_UNITS_OUTPUT_LAYER);
     
-    #error
+    # error
     cross = tf.nn.softmax_cross_entropy_with_logits(logits = s2, labels = faty);
-    weightDecay = (tf.reduce_sum(w1**2) + tf.reduce_sum(w2**2) )*(LAMDA)
+    weightDecay = (wd + tf.reduce_sum(w2**2) )*(lamda)
     
     loss = tf.reduce_mean((cross + weightDecay)/2.0)
 
@@ -96,9 +136,8 @@ if __name__ == "__main__":
        
         num_batches = trainX.shape[0] // BATCH_SIZE
         
-        for lr in range( len(LEARNING_RATES) ):
+        for lr in range(1):
             
-            learningRate = LEARNING_RATES[lr]
             descendGradient = tf.train.AdamOptimizer(learningRate).minimize(loss);
             
             #initializer has to be done after declaring adam optimizer
@@ -149,7 +188,7 @@ if __name__ == "__main__":
             
 
         
-        for lr in range(len(LEARNING_RATES)):
+        for lr in range(1):
             
             #get list of numbers from 0 to num iterations
             xVals = np.arange(len(crossTrainVals[lr]));
