@@ -141,7 +141,7 @@ if __name__ == "__main__":
 			w1matrix = tf.unstack(w1matrix) #unstacks it into a list of 28 x 28 images
 			#w1matrix = tf.convert_to_tensor(w1matrix)
 			#print(w1matrix.shape)
-			w1matrix = tf.concat (w1matrix,axis = 1) #now a single row of 28*28*100 
+			#w1matrix = tf.concat (w1matrix,axis = 1) #now a single row of 28*28*100 
 			#print(w1matrix.shape)
 			#w1matrix = tf.split(w1matrix,10)#split this into 10 rows
 			#w1matrix = tf.convert_to_tensor(w1matrix)	#this is (10,10,28,28)
@@ -154,7 +154,7 @@ if __name__ == "__main__":
 				print("Reached")
 
 
-			if (i == NUM_ITERATIONS):
+			if (i == NUM_ITERATIONS-1):
 				weightM = sess.run(w1matrix)
 				weightMatrix100 = np.array(weightM)
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
 	for i in range(1, columns*rows +1):
 
 		fig.add_subplot(rows, columns, i)
-		plt.imshow(weightMatrix25[i-1], cmap = 'gray')
+		plt.imshow(weightMatrix100[i-1], cmap = 'gray')
 	plt.show()
 
 	#for i in range(9):
@@ -258,5 +258,4 @@ if __name__ == "__main__":
 	#plt.legend();
 	#plt.title("Classification Error vs Num Epochs with HU = " + str(numHiddenUnits))
 
-	#plt.show()
-
+#plt.show()
