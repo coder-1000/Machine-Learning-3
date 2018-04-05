@@ -123,29 +123,12 @@ if __name__ == "__main__":
 			end = start + BATCH_SIZE;
 			sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end]})
 			w1matrix = np.array(sess.run(w1))
-#			print("Shape of w1 matrix")
-#			print(sess.run(w1).shape)
-#			print ("Shape of w2 matrix")
-#			print(sess.run(w2).shape)
-#			print("w2d ")
-#			print(sess.run(w2d).shape)
-#			print(w1matrix.shape) #784x500
+
 			w1matrix = w1matrix[:,:100]
-			#print("Shape")
-			#print(w1matrix.shape)
 			w1matrix = np.reshape(np.transpose(w1matrix), (100,28,28))
-			#print(w1matrix.shape)#100x28x28
 			w1matrix = tf.convert_to_tensor(w1matrix)#100x28x28
-			#print(w1matrix.shape)
 
 			w1matrix = tf.unstack(w1matrix) #unstacks it into a list of 28 x 28 images
-			#w1matrix = tf.convert_to_tensor(w1matrix)
-			#print(w1matrix.shape)
-			#w1matrix = tf.concat (w1matrix,axis = 1) #now a single row of 28*28*100 
-			#print(w1matrix.shape)
-			#w1matrix = tf.split(w1matrix,10)#split this into 10 rows
-			#w1matrix = tf.convert_to_tensor(w1matrix)	#this is (10,10,28,28)
-			#print(w1matrix.shape)
 
 			if (i== 0.25*NUM_ITERATIONS):
 				weightM = sess.run(w1matrix)
