@@ -47,10 +47,8 @@ if __name__ == "__main__":
     minClassValid = 9999
     minClassTest = 9999
     
-
-        
+    tf.set_random_seed(1002473496)
     start = 0;
-   
         
     ###setting up tf's graph
 
@@ -110,9 +108,12 @@ if __name__ == "__main__":
     ###gradient descent
     with tf.Session() as sess:
         sess.run(initializer)
-        
+        tf.set_random_seed(1002473496) 
         for i in range(NUM_ITERATIONS): 
-        
+            
+            if(i ==0):
+                print(sess.run(tf.random_uniform([1])))
+                
             end = start + BATCH_SIZE;
             sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
             
@@ -147,7 +148,7 @@ if __name__ == "__main__":
             
             #increment batch
             start = end % numTrainingPoints
-        
+        sess.close() 
 
     ###plotting
 
