@@ -13,6 +13,37 @@ NUM_HIDDEN_UNITS = 1000
 KEEP_RATE = 0.5 
 EARLY_STOP_POINT = 4379
 
+def plotWeights(weights, drop, iteration):
+    numRows = 10
+    numCols = 10
+    
+    numUnits = numRows*numCols
+    weights = np.transpose(weights[:,numUnits:numUnits*2])
+    
+    picW = 28
+    picH = 28   
+    #set up a 10x10 of 28x28 image with a white background and black border
+    figure, axes = plt.subplots(numRows, numCols, figsize=(picW,picH), facecolor ='w', edgecolor='k', frameon = False)
+    
+    axes = axes.ravel()
+
+    for picNum in range(numUnits):
+        #format image for figure
+        picture = weights[picNum,:]
+        picture = np.reshape(picture, [28,28])
+        axes[picNum].imshow(picture, cmap="gray")
+        axes[picNum].axis('off')
+                
+    #plt.tight_layout();
+    iteration = i;
+    plotName = "visualization_"+str(iteration)+"_"+drop
+    plt.savefig(plotName)
+    print(plotName)
+    #plt.show()
+
+
+
+
 if __name__ == "__main__":
 
     with np.load("notMNIST.npz") as data:
@@ -65,7 +96,7 @@ if __name__ == "__main__":
     testX = np.reshape(testData, (testData.shape[0], -1) );
     testY = testTarget.astype(np.float64); 
     
-    quarter = 3*EARLY_STOP_POINT//4.0
+    quarter = EARLY_STOP_POINT//4.0
 
     ###set up graphs to train 2 cnn. 1 with dropout and one without
 
@@ -113,40 +144,23 @@ if __name__ == "__main__":
         sess.run(initializer)
         tf.set_random_seed(1002473496) 
         for i in range(EARLY_STOP_POINT): 
-            
+             
             
             end = start + BATCH_SIZE;
-            if(i == quarter):
+            if((i == quarter) or (i== (EARLY_STOP_POINT-1) )):
                 weights = sess.run(w1, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
-                weights = np.transpose(weights[:,0:100])
-                print(weights.shape) 
-                numRows = 10
-                numCols = 10
-                picW = 28
-                picH = 28
                 
-                #set up a 10x10 of 28x28 image with a white background and black border
-                figure, axes = plt.subplots(numRows, numCols, figsize=(picW,picH), facecolor ='w', edgecolor='k', frameon = False)
-                print(axes.shape)
+                iteration = i
+                
+                drop = 'noDrop'
+                plotWeights(weights, drop, iteration) 
 
-                axes = axes.ravel()
+                drop = 'drop'
+                weightsD = sess.run(w1d, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
+                plotWeights(weightsD, drop, iteration)
 
-                for picNum in range(numRows*numCols):
-                    #format image for figure
-                    picture = weights[picNum,:]
-                    picture = np.reshape(picture, [28,28])
-                    axes[picNum].imshow(picture, cmap="gray")
-                plt.show()
-        
-            #sess.run(descendGradientDrop, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
+            sess.run(descendGradientDrop, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
             sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
-            
-            #if( ((i+1)% num_batches) == 0):
-                #print(i)
-           
-            if((i == quarter) or (i == EARLY_STOP_POINT)):
-                print("early stopping point")
-                print(i)
 
             #increment batch
             start = end % numTrainingPoints
