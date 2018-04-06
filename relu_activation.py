@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 NUM_HIDDEN_UNITS = 1000;
 NUM_UNITS_OUTPUT_LAYER = 10;
 BATCH_SIZE = 500;
-NUM_ITERATIONS = 200;
+NUM_ITERATIONS = 5000;
 NUM_PIXELS = 784
 LAMDA = 0.0003
 LEARNING_RATES = [0.005, 0.001, 0.0001]
@@ -92,7 +92,6 @@ if __name__ == "__main__":
         with tf.Session() as sess:          
             start = 0;
 
-
             learningRate = LEARNING_RATES[lr]
             descendGradient = tf.train.AdamOptimizer(learningRate).minimize(loss);
             
@@ -104,10 +103,10 @@ if __name__ == "__main__":
             for i in range(NUM_ITERATIONS): 
             
                 end = start + BATCH_SIZE;
-                if(i == 0):
-                    test = sess.run(w2,feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
-                    print("test")
-                    print(test[0])
+                #if(i == 0):
+                    #test = sess.run(w2,feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
+                    #print("test")
+                    #print(test[0])
                 
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
