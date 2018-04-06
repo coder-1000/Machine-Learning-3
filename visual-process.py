@@ -7,7 +7,7 @@ import matplotlib.ticker as plticker
 NUM_HIDDEN_UNITS = 1000;
 NUM_OUTPUT_UNITS = 10;
 BATCH_SIZE = 500;
-NUM_ITERATIONS = 200;
+NUM_ITERATIONS = 100;
 NUM_PIXELS = 784
 LAMDA = 0.0003
 BEST_LEARNING_RATE = 0.0001
@@ -122,49 +122,33 @@ if __name__ == "__main__":
 
 			end = start + BATCH_SIZE;
 			sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end]})
-			w1matrix = np.array(sess.run(w1))
-			#print("Shape of w1 matrix")
-			#print(sess.run(w1).shape)
-
-			w1matrix = w1matrix[:,:100]
-			#for padding
-			minimum = tf.argmin(tf.convert_to_tensor(w1matrix), axis = 1)#across rows
-			minimum = tf.argmin(minimum)
-
-			#print("Shape")
-			#print(w1matrix.shape)
-
-			w1matrix = np.reshape(np.transpose(w1matrix), (100,28,28))
-
-			#print(w1matrix.shape)#100x28x28
-
-			w1matrix = tf.convert_to_tensor(w1matrix)#100x28x28
-			#print(w1matrix.shape)
-
-
-			w1matrix = tf.unstack(w1matrix) #unstacks it into a list of 28 x 28 images of 100 elements
-
-			w1matrix = np.array(w1matrix)
-			#w1matrix = tf.convert_to_tensor(w1matrix)#100x28x28
-			for j in range(100):
-				w1matrix[j] = tf.pad(w1matrix[j], [[2,2],[2,2]], mode = "CONSTANT", constant_values = tf.cast(minimum,tf.float64))
-
-			print("Shape of matrix")
-			#w1matrix = tf.convert_to_tensor(w1matrix)
-			#print(w1matrix.shape)
-			w1matrix = np.array(sess.run(w1matrix))
-			w1matrix = tf.concat (w1matrix,axis = 1) #now a single row of 28x(28*100) #now 32x(32x100)
-			#print(w1matrix.shape)
-			w1matrix = tf.split(w1matrix,10,axis = 1)#split this into 10 rows
-			w1matrix = tf.concat([w1matrix[0],w1matrix[1], w1matrix[2], w1matrix[3],w1matrix[4],w1matrix[5],w1matrix[6],w1matrix[7],w1matrix[8],w1matrix[9]], 0)
-			print(sess.run(w1matrix).shape)
-			print("Iteration:", i)
-
-			#w1matrix = tf.concat(w1matrix,0)
-			#w1matrix = tf.convert_to_tensor(w1matrix)	#this is (10,10,28,28)
-			#w1matrix = tf.reshape(w1matrix,(10,10))
+			
 
 			if (i== 0.25*NUM_ITERATIONS):
+				w1matrix = np.array(sess.run(w1))
+				w1matrix = w1matrix[:,:100]
+				#for padding
+				minimum = tf.reduce_min(w1matrix)
+
+				w1matrix = np.reshape(np.transpose(w1matrix), (100,28,28))
+				w1matrix = tf.convert_to_tensor(w1matrix)#100x28x28
+				w1matrix = tf.unstack(w1matrix) #unstacks it into a list of 28 x 28 images of 100 elements
+			
+				w1matrix = np.array(sess.run(w1matrix))
+				w1matrix_list = []
+			
+				for j in range(100):
+
+					a = np.pad(w1matrix[j], [[2,2],[2,2]], constant_values = sess.run(minimum), mode = 'constant')
+					#print(a.shape)
+					w1matrix_list.append(np.pad(w1matrix[j], [[2,2],[2,2]], constant_values = sess.run(minimum), mode = 'constant'))
+
+
+				w1matrix = np.array(w1matrix_list)
+				w1matrix = tf.concat([t for t in w1matrix], axis = 1)
+				w1matrix = tf.split(w1matrix,10,axis = 1)#split this into 10 rows
+				w1matrix = tf.concat([w1matrix[0],w1matrix[1], w1matrix[2], w1matrix[3],w1matrix[4],w1matrix[5],w1matrix[6],w1matrix[7],w1matrix[8],w1matrix[9]], 0)
+
 				weightM = sess.run(w1matrix)
 				weightMatrix25 = np.array(weightM)
 				print(weightMatrix25.shape)
@@ -172,6 +156,33 @@ if __name__ == "__main__":
 
 
 			if (i == NUM_ITERATIONS-1):
+				w1matrix = np.array(sess.run(w1))
+				#print("Shape of w1 matrix")
+				#print(sess.run(w1).shape)
+
+				w1matrix = w1matrix[:,:100]
+				#for padding
+				minimum = tf.reduce_min(w1matrix)
+				w1matrix = np.reshape(np.transpose(w1matrix), (100,28,28))
+
+				#print(w1matrix.shape)#100x28x28
+				w1matrix = tf.convert_to_tensor(w1matrix)#100x28x28
+				w1matrix = tf.unstack(w1matrix) #unstacks it into a list of 28 x 28 images of 100 elements
+				w1matrix = np.array(sess.run(w1matrix))
+				w1matrix_list = []
+
+				for j in range(100):
+
+					a = np.pad(w1matrix[j], [[2,2],[2,2]], constant_values = sess.run(minimum), mode = 'constant')
+					w1matrix_list.append(np.pad(w1matrix[j], [[2,2],[2,2]], constant_values = sess.run(minimum), mode = 'constant'))
+
+				w1matrix = np.array(w1matrix_list)
+				w1matrix = tf.concat([t for t in w1matrix], axis = 1)
+				w1matrix = tf.split(w1matrix,10,axis = 1)#split this into 10 rows
+				w1matrix = tf.concat([w1matrix[0],w1matrix[1], w1matrix[2], w1matrix[3],w1matrix[4],w1matrix[5],w1matrix[6],w1matrix[7],w1matrix[8],w1matrix[9]], 0)
+				
+				weightM = sess.run(w1matrix)
+				weightMatrix25 = np.array(weightM)
 				weightM = sess.run(w1matrix)
 				weightMatrix100 = np.array(weightM)
 
@@ -247,35 +258,3 @@ if __name__ == "__main__":
 	
 	plt.imshow(weightMatrix100, cmap = "gray")
 	plt.show()
-
-#	for i in range(1, columns*rows +1):
-
-#		fig.add_subplot(rows, columns, i)
-#		plt.imshow(weightMatrix25[i-1], cmap = 'gray')
-#	plt.show()
-
-	#for i in range(9):
-	#	for j in range(9):
-	#		plt.subplot(28,28,1+i)
-	#		plt.imshow(weightMatrix25[i][j], cmap = 'gray')
-	#plt.show()
-	#plt.imshow(weightMatrix100[1][1], cmap = 'gray')
-	#plt.show()
-
-	#plt.imshow(weightMatrix25, cmap = 'gray')
-	#plt.show()
-	#plt.imshow(weightMatrix100, cmap = 'gray')
-	#plt.show()
-
-	#plt.figure()
-
-	#plt.plot(xVals, classTrainVals, label="training pts" )
-	#plt.plot(xVals, classValidVals, label="validation pts" )
-	#plt.plot(xVals, classTestVals, label="test points")
-
-	#plt.xlabel('Epoch #');
-	#plt.ylabel('Classification Error');
-	#plt.legend();
-	#plt.title("Classification Error vs Num Epochs with HU = " + str(numHiddenUnits))
-
-	#plt.show()
