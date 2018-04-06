@@ -55,7 +55,7 @@ if __name__ == "__main__":
     learningRate = []
 
 
-    for itr in range(5):
+    for itr in range(10):
 
         print("iteration number: " + str(itr))
         np.random.seed(int(time.time()))
@@ -71,16 +71,11 @@ if __name__ == "__main__":
 
         lr = exp(lr[0])
         learningRate.append(lr)
-        numLayer = numLayer[0]
+        numLayer = numLayer[1]
         numHiddenUnits = numHiddenUnits[0]
         lamda = exp(lamda[0])
         dropFlag = int(time.time())%2
 
-        print(lr)
-        print(numLayer)
-        print(numHiddenUnits)
-        print(lamda)
-        print(dropFlag)
 
         #format data
         numTrainingPoints = trainData.shape[0]
@@ -106,6 +101,7 @@ if __name__ == "__main__":
         # s - sensitivity/weighted
         x1 = []
         wd = []
+
         for i in range(numLayer):
 
             # hidden layer
