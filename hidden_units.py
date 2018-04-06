@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 NUM_HIDDEN_UNITS = 1000;
 NUM_UNITS_OUTPUT_LAYER = 10;
 BATCH_SIZE = 500;
-NUM_ITERATIONS = 200;
+NUM_ITERATIONS = 5000;
 NUM_PIXELS = 784
 LAMDA = 0.0003
 BEST_LEARNING_RATE = 0.0001
@@ -49,16 +49,19 @@ if __name__ == "__main__":
     
 
         
-    start = 0;
    
     numOptions = len(HIDDEN_UNIT_OPTIONS)
 
     for lr in range(numOptions ):
         
+        start = 0;
         ###setting up tf's graph
 
         #reset graph to start from blank
         tf.reset_default_graph()
+        
+        #so we get the same results each time
+        tf.set_random_seed(1002473496) 
         
         #current hidden units
         numHiddenUnits = HIDDEN_UNIT_OPTIONS[lr]
@@ -113,6 +116,11 @@ if __name__ == "__main__":
             for i in range(NUM_ITERATIONS): 
             
                 end = start + BATCH_SIZE;
+                
+                #if(i == 0):
+                    #print("test")
+                    #print(sess.run(tf.random_uniform([1])))
+
                 sess.run(descendGradient, feed_dict={x0:  trainX[start:end], y: trainY[start: end] })
                 
                 if( ((i+1)% num_batches) == 0):
@@ -146,7 +154,7 @@ if __name__ == "__main__":
                 
                 #increment batch
                 start = end % numTrainingPoints
-        
+            sess.close() 
 
     ###plotting
 
